@@ -27,9 +27,9 @@ wandb/
 /temp
 
 # checkpoint files
-*.safetensors
-*.ckpt
-*.pt
+#*.safetensors
+#*.ckpt
+#*.pt
 
 # data files
 *.mp4
@@ -45,7 +45,7 @@ wandb/
 *.log
 
 !/latentsync/utils/mask*.png
-/checkpoints/
+#/checkpoints/
 !/assets/*
 !/docs/*
 !/internal/*.png

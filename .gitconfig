@@ -1,0 +1,215 @@
+[user]
+	name = Lorne
+	email = dev@luotao.net
+	useConfigOnly = true
+
+[includeIf "gitdir:~/Workspace/swf/"]
+    path = .gitconfig-work
+
+[alias]
+# BASIC
+	a = add
+	c = commit
+	cl = clone --recurse-submodules
+	ci = commit -m
+	cm = commit -m
+	mg = merge
+	s = status
+	st = status
+	sn= status -uno
+	stn= status -uno
+	co = checkout
+	cb = checkout -b
+	rollback = checkout main --
+	ca = commit --amend
+	can = commit --amend --no-edit
+	rb = rebase
+	fta = fetch --all
+	fto = fetch origin
+	up = remote update
+	di = diff --color
+	dino = diff --no-index
+	din = diff --color --no-index
+	mb = merge-base
+	rmc = rm --cached
+	ref = reflog --date=iso
+	rv = remote -v
+	pick = cherry-pick
+	unstage = reset HEAD
+	all = add --all
+	mod = add -u .
+	pp = pop
+
+# BRANCH
+	br = branch --color --sort=-committerdate
+	ba = branch --color --all
+	
+	# track same name branch from remote to local 
+	tr = !sh -c 'test ! -z $1 && git branch --set-upstream-to=origin/$1 $1 || echo "err: input remote branch name"' -
+	
+	# remove branch remotely
+	rmb = push origin --delete
+	
+	# reset --hard and stash if necessary
+	rh = !sh -c 'test ! -z $1 && (test -z \"`git status -uno -s`\" && git reset --hard $1 || (git stash && git reset --hard $1 && git pop))' -
+
+	# rebase continue 
+	rbc = rebase --continue
+	ra = rebase --abort
+
+	# rebase abort
+	rba = rebase --abort
+	ra = rebase --abort
+	pa = cherry-pick --abort
+
+# PULL
+	pl = pull
+	plm = submodule update --init
+	pa = pull --all
+	plo = pull --rebase origin
+	plt = fetch --tags  # pull all tags from remote
+	# pull --rebase, stash if necessary
+	plr = !sh -c 'test -z \"`git status -uno -s`\" && git pull --rebase || (git stash && git pull --rebase && git pop)' -
+	# pull --merge, stash if necessary
+	plm = !sh -c 'test -z \"`git status -uno -s`\" && git pull --merge || (git stash && git pull --rebase && git pop)' -
+
+# PUSH	
+	ps = push origin HEAD
+	psf = push origin HEAD -f
+	deploy = push origin master
+
+	# push to specified remote
+	psto = !sh -c 'git push ${1:-origin} HEAD' -
+	
+	# push all tags to origin remote
+	pst = push origin --tags
+
+	# push HEAD to all remotes
+	pstoall = !sh -c 'git remote | grep -v  "fork" | xargs -L1 -I R git push R HEAD'
+	
+	# push all branch to all remotes
+	psall = !sh -c 'git remote | xargs -L1 git push --all'
+
+# TAG
+	v = !sh -c 'git ver $1' -
+	# get commit by tag name
+	tagc = rev-list -n 1
+
+	# list all tags and messages
+	tags = tag --sort=v:refname --format='%(refname:strip=2) %(contents:lines=1) <%(*authordate:relative)>'
+
+	# list all version tag or get version by commit hash
+	ver = !sh -c 'test ! -z $1 && (git tag --list \"v*\" --sort=v:refname --format=\"%(tag) <%(*authordate:relative)> %(contents:lines=1)\" --contains $1 | head -1) || git tag -l \"v*\" --sort=v:refname --format=\"%(tag) <%(*authordate:relative)> %(contents:lines=1)\" $1' -
+
+	# delete tag from remote
+	rmtag = !sh -c 'test ! -z $1 && (git tag -d $1 && git push origin :refs/tags/$1) || echo "input tag name going to delete"' -
+	# push tags to remote
+	pstag = push --tags
+# STASH
+	apply = stash apply
+	save = stash save
+	pop = stash pop
+	list = stash list
+
+# LOG
+	sv = status -vv
+	wc = whatchanged
+	last = log -1
+	l = !sh -c 'git lg'
+	lr = log --color --reverse --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+	# customized log format
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	
+	# reverse logs
+	rlog = log --color --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --reverse
+
+	# log with files changed
+	logs = !sh -c 'git lg --name-status'
+
+# OTHER
+	# contributors by name
+	contrib = shortlog --no-merges -s -n
+	
+	# cotributors by email
+	author = shortlog --no-merges -s -n --email
+	
+	# total commit count exlude merge commit
+	total = !sh -c 'git log --no-merges --pretty=format:"" | wc -l' -
+	
+	# print all git alias
+	alias = config --get-regexp alias
+
+[pull]
+	rebase = true
+[push]
+	default = matching
+[core]
+	editor = vim
+	pager = less -F -X
+	quotepath = false
+	longpaths = true
+	autocrlf = input
+	trustctime = false
+	excludesfile = ~/.gitignore_global
+	attributesfile = ~/.attributes_global
+	ignorecase = true
+	untrackedcache = true
+[filter "hawser"]
+	clean = git hawser clean %f
+	smudge = git hawser smudge %f
+	required = true
+[mergetool]
+	keepBackup = false
+[color]
+  	ui = auto
+[color "branch"]
+  	current = green reverse
+  	local = green
+  	remote = red
+[color "diff"]
+  	meta = yellow bold
+  	frag = magenta bold
+  	old = red bold
+  	new = green bold
+[color "status"]
+	added = green
+	changed = blue
+	untracked = magenta
+	deleted = red
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	required = true
+	process = git-lfs filter-process
+
+[commit]
+	template = /Users/lorne.luo/.stCommitMsg
+[credential "https://git-codecommit.ap-southeast-2.amazonaws.com"]
+	UseHttpPath = true
+[http]
+	postBuffer = 655360000
+[init]
+	defaultBranch = main
+[diff "text"]
+	textconv = cat
+[lfs]
+	concurrenttransfers = 32
+	fetchrecentrefsdays = 0
+	pruneoffsetdays = 0
+	dialtimeout = 3
+	tlstimeout = 3
+[lfs "transfer"]
+	maxretries = 1
+	maxretrydelay = 2
+[merge "lfs-text"]
+	driver = git lfs merge-driver --ancestor %O --current %A --other %B --marker-size %L --output %A --program 'git merge-file --stdout --marker-size=%%L %%A %%O %%B >%%D'
+[rebase]
+	backend = merge
+[protocol]
+	version = 1
+[safe]
+	directory = *
+[pager]
+	log = true
